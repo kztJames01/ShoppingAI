@@ -69,7 +69,6 @@ def load_data(filename):
 
     with open(filename, newline='')as csvfile:
         reader = csv.DictReader(csvfile)
-        next(reader)
 
         for row in reader:
             inner_evidencelist = [
@@ -100,7 +99,6 @@ def load_data(filename):
             labels.append(label)
 
     return evidence, labels
-
 
 def train_model(evidence, labels):
     """
@@ -157,3 +155,25 @@ def evaluate(labels, predictions):
 
 if __name__ == "__main__":
     main()
+
+def data_check(evidence, labels):
+    evidence, labels = load_data(sys.argv[1])
+
+    assert len(evidence) == len(labels), (
+        "Number of evidence lists and labels do not match."
+    )
+
+    for i, entryEvidence in enumerate(evidence[:10]):
+        assert len(entryEvidence) == 17, f"Evidence[{i}] has {len(entryEvidence)} elements, expected 17 but got {len(entryEvidence)}"
+
+    first_evidence = evidence[0]
+    assert isinstance(first_evidence[0], int)  #Administrative
+    assert isinstance(first_evidence[1], float)
+    assert isinstance(first_evidence[10], int) and 0 <= first_evidence[10] <= 11 #Month
+    assert first_evidence[15] in (0,1)       #VistorType
+    assert first_evidence[16] in (0,1)       #Weekend
+    assert labels[0] in (0,1)  #Label check
+
+    print("All good!")
+    print("First 5 labels:", labels[:5])     #Revenue check
+    print("First evidence:", evidence[0])
