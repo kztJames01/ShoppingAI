@@ -32,32 +32,6 @@ def main():
 
 
 def load_data(filename):
-    """
-    Load shopping data from a CSV file `filename` and convert into a list of
-    evidence lists and a list of labels. Return a tuple (evidence, labels).
-
-    evidence should be a list of lists, where each list contains the
-    following values, in order:
-        - Administrative, an integer
-        - Administrative_Duration, a floating point number
-        - Informational, an integer
-        - Informational_Duration, a floating point number
-        - ProductRelated, an integer
-        - ProductRelated_Duration, a floating point number
-        - BounceRates, a floating point number
-        - ExitRates, a floating point number
-        - PageValues, a floating point number
-        - SpecialDay, a floating point number
-        - Month, an index from 0 (January) to 11 (December)
-        - OperatingSystems, an integer
-        - Browser, an integer
-        - Region, an integer
-        - TrafficType, an integer
-        - VisitorType, an integer 0 (not returning) or 1 (returning)
-        - Weekend, an integer 0 (if false) or 1 (if true)
-
-
-    """
 
     evidence = []
     labels = []
@@ -93,38 +67,20 @@ def load_data(filename):
             evidence.append(inner_evidencelist)
 
 
-            """labels should be the corresponding list of labels, where each label
-            is 1 if Revenue is true, and 0 otherwise."""
             label = 1 if row["Revenue"] == "TRUE" else 0
             labels.append(label)
 
     return evidence, labels
 
 def train_model(evidence, labels):
-    """
-    Given a list of evidence lists and a list of labels, return a
-    fitted k-nearest neighbor model (k=1) trained on the data.
-    """
+
     model = KNeighborsClassifier(n_neighbors=1)
     model.fit(evidence, labels)
     return model
 
 
 def evaluate(labels, predictions):
-    """
-    Given a list of actual labels and a list of predicted labels,
-    return a tuple (sensitivity, specificity).
 
-    Assume each label is either a 1 (positive) or 0 (negative).
-
-    `sensitivity` should be a floating-point value from 0 to 1
-    representing the "true positive rate": the proportion of
-    actual positive labels that were accurately identified.
-
-    `specificity` should be a floating-point value from 0 to 1
-    representing the "true negative rate": the proportion of
-    actual negative labels that were accurately identified.
-    """
     true_positives = 0
     true_negatives = 0
     false_positives = 0
@@ -156,24 +112,3 @@ def evaluate(labels, predictions):
 if __name__ == "__main__":
     main()
 
-def data_check(evidence, labels):
-    evidence, labels = load_data(sys.argv[1])
-
-    assert len(evidence) == len(labels), (
-        "Number of evidence lists and labels do not match."
-    )
-
-    for i, entryEvidence in enumerate(evidence[:10]):
-        assert len(entryEvidence) == 17, f"Evidence[{i}] has {len(entryEvidence)} elements, expected 17 but got {len(entryEvidence)}"
-
-    first_evidence = evidence[0]
-    assert isinstance(first_evidence[0], int)  #Administrative
-    assert isinstance(first_evidence[1], float)
-    assert isinstance(first_evidence[10], int) and 0 <= first_evidence[10] <= 11 #Month
-    assert first_evidence[15] in (0,1)       #VistorType
-    assert first_evidence[16] in (0,1)       #Weekend
-    assert labels[0] in (0,1)  #Label check
-
-    print("All good!")
-    print("First 5 labels:", labels[:5])     #Revenue check
-    print("First evidence:", evidence[0])
